@@ -16,7 +16,8 @@
 
 | Status Code | Structure | Example |
 | ---------- |--------- | ------ |
-| 200 |  | json <br> hellwow roddl  |
+| 200 |  | json <br> 
+hellwow roddl  |
 
 
 
