@@ -5,9 +5,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+
 const port = 4000;
 
 const app = express();
+const validateEmail = (email) => {
+  // Regular expression for email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 app.use(
   treblle({
@@ -64,14 +70,28 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+
+
 app.post("/api/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
+    
+    // Email validation
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        status: false,
+        code: 400,
+        message: "The API request is invalid. Please refer to the API documentation.",
+        errors: {
+          email: ["The email must be a valid email address."],
+        },
+      });
+    }
+    
     const user = users.find((user) => user.username === username);
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
-
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid username or password" });
